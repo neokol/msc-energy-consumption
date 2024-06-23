@@ -1,0 +1,55 @@
+version: "3.7"
+
+services:
+  minio:
+    image: quay.io/minio/minio:RELEASE.2024-04-06T05-26-02Z.fips
+    container_name: minio
+    restart: unless-stopped
+    ports:
+      - 9100:9000
+      - 9001:9001
+    env_file:
+      - .env
+    volumes:
+      - minio_data:/data
+    networks:
+      - app
+    command: server /data --console-address ":9001"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  rabbitmq:
+    image: rabbitmq:3.12.14-management-alpine
+    container_name: rabbitmq
+    restart: unless-stopped
+    ports:
+      - 5672:5672
+      - 15672:15672
+    env_file:
+      - .env
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - app
+
+  node-red:
+    image: nodered/node-red:latest
+    container_name: nodered
+    restart: unless-stopped
+    environment:
+      - TZ=Europe/Amsterdam
+    ports:
+      - "1880:1880"
+    networks:
+      - app
+    volumes:
+      - node-red-data:/data
+
+volumes:
+  minio_data:
+  rabbitmq_data:
+  node-red-data:
+
+networks:
+  app:
+    driver: bridge
