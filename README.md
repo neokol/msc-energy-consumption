@@ -1,4 +1,4 @@
-    **OPENWHISK**
+OPENWHISK
 
 - How to install:
 
@@ -56,7 +56,7 @@ How to create a action:
    wsk action create packageAction --kind nodejs:20 action.zip --web true
 ```
 
-    **MINIO - RABBITMQ - NODERED**
+MINIO - RABBITMQ - NODERED
 
 ```sh
 mkdir minio
@@ -65,7 +65,7 @@ cd minio
 docker compose up -d
 ```
 
-    **FASTAPI**
+FASTAPI
 
 How to run
 
