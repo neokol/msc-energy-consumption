@@ -45,7 +45,7 @@ def invoke_cost_copenwhisk_action(date):
         raise HTTPException(status_code=response.status_code, detail=response.text)
     
     
-def invoke_anormaly_copenwhisk_action():
+def invoke_anormaly_copenwhisk_action(date):
     url = f"{os.getenv('OPENWHISK_APIHOST')}/api/v1/namespaces/{os.getenv('OPENWHISK_NAMESPACE')}/actions/dailyCost"
     params = {
         "blocking": "true",
@@ -55,7 +55,10 @@ def invoke_anormaly_copenwhisk_action():
         'Content-Type': 'application/json',
         'Authorization': 'Basic ' + base64.b64encode(f"{os.getenv('OPENWHISK_USER')}:{os.getenv('OPENWHISK_PASS')}".encode()).decode()
     }
-    response = requests.post(url,  params=params, headers=headers)
+    payload = {
+        "date": date
+    }
+    response = requests.post(url,json=payload,  params=params, headers=headers)
     if response.status_code == 200:
         return response.json()
     else:
