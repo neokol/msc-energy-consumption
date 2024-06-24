@@ -1,4 +1,4 @@
-from invoker.invoker import invoke_openwhisk_action, invoke_cost_copenwhisk_action
+from invoker.invoker import invoke_anormaly_copenwhisk_action, invoke_openwhisk_action, invoke_cost_copenwhisk_action
 
 import os
 from fastapi import FastAPI, HTTPException, Request
@@ -127,7 +127,7 @@ def get_daily_cost(date: str):
 @app.post("/api/anomaly_detection")
 def get_anomaly_device(date: str):
     try:
-        result = invoke_cost_copenwhisk_action(date)
+        result = invoke_anormaly_copenwhisk_action(date)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

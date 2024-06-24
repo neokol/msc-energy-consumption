@@ -26,7 +26,7 @@ def invoke_openwhisk_action(device_id):
         raise HTTPException(status_code=response.status_code, detail=response.text)
     
 def invoke_cost_copenwhisk_action(date):
-    url = f"{os.getenv('OPENWHISK_APIHOST')}/api/v1/namespaces/{os.getenv('OPENWHISK_NAMESPACE')}/actions/costCalculation"
+    url = f"{os.getenv('OPENWHISK_APIHOST')}/api/v1/namespaces/{os.getenv('OPENWHISK_NAMESPACE')}/actions/dailyCost"
     params = {
         "blocking": "true",
         "result": "true"
@@ -46,7 +46,7 @@ def invoke_cost_copenwhisk_action(date):
     
     
 def invoke_anormaly_copenwhisk_action(date):
-    url = f"{os.getenv('OPENWHISK_APIHOST')}/api/v1/namespaces/{os.getenv('OPENWHISK_NAMESPACE')}/actions/dailyCost"
+    url = f"{os.getenv('OPENWHISK_APIHOST')}/api/v1/namespaces/{os.getenv('OPENWHISK_NAMESPACE')}/actions/anomalyDetection"
     params = {
         "blocking": "true",
         "result": "true"
