@@ -127,9 +127,9 @@ def get_daily_cost(date: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/anomaly_detection")
-def get_anomaly_device():
+def get_anomaly_device(date: str):
     try:
-        result = invoke_cost_copenwhisk_action()
+        result = invoke_cost_copenwhisk_action(date)
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

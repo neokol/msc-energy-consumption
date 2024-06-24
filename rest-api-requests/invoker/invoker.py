@@ -46,7 +46,7 @@ def invoke_cost_copenwhisk_action(date):
     
     
 def invoke_anormaly_copenwhisk_action():
-    url = f"{os.getenv('OPENWHISK_APIHOST')}/api/v1/namespaces/{os.getenv('OPENWHISK_NAMESPACE')}/actions/detectAnormalities"
+    url = f"{os.getenv('OPENWHISK_APIHOST')}/api/v1/namespaces/{os.getenv('OPENWHISK_NAMESPACE')}/actions/dailyCost"
     params = {
         "blocking": "true",
         "result": "true"
