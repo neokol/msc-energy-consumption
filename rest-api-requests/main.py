@@ -58,35 +58,6 @@ def read_root():
 def get_energy_readings():
     return energy_data
 
-@app.post("/api/energy")
-def add_energy_reading(reading: EnergyReading):
-    energy_data.append(reading)
-    # Save to MinIO
-    try:
-        s3_key = f"energy/{reading.device_id}/{datetime.now().strftime('%Y%m%d%H%M%S')}.json"
-        data = json.dumps(reading.dict()).encode('utf-8')
-        data_stream = io.BytesIO(data)
-        minio_client.put_object(
-            bucket_name,
-            s3_key,
-            data=data_stream,
-            length=len(data),
-            content_type="application/json"
-        )
-    except S3Error as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    
-    # Convert list of EnergyReading objects to list of dictionaries
-    energy_data_dicts = [e.dict() for e in energy_data]
-    
-    # Analyze consumption
-    analysis_result = call_openwhisk_action('analyze_consumption_api', {'readings': energy_data_dicts})
-    
-    return {
-        "message": "Energy reading added successfully",
-        "analysis": analysis_result
-    }
-
 @app.post("/api/provide_energy")
 def receive_energy_data(data: EnergyReading):
     try:
