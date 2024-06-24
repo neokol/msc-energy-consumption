@@ -1,0 +1,77 @@
+[
+    {
+        "id": "1",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "http_in",
+        "type": "http in",
+        "z": "1",
+        "name": "",
+        "url": "/webhook/minio",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 80,
+        "wires": [
+            [
+                "check_value"
+            ]
+        ]
+    },
+    {
+        "id": "check_value",
+        "type": "function",
+        "z": "1",
+        "name": "Check Value and Send Email",
+        "func": "const data = msg.payload;\n\n// Assuming data contains the value in msg.payload.value\nif (data.value > 500) {\n    msg.payload = {\n        to: \"recipient@example.com\",\n        subject: \"Anomaly Detected\",\n        text: `Anomaly detected with value: ${data.value}`\n    };\n    return [msg, null]; // Send to email\n} else {\n    return [null, msg]; // Continue to next process if needed\n}",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 350,
+        "y": 80,
+        "wires": [
+            [
+                "send_email"
+            ],
+            [
+                "http_response"
+            ]
+        ]
+    },
+    {
+        "id": "send_email",
+        "type": "e-mail",
+        "z": "1",
+        "server": "smtp.gmail.com",
+        "port": "587",
+        "secure": true,
+        "tls": true,
+        "name": "",
+        "dname": "",
+        "x": 610,
+        "y": 80,
+        "wires": [
+            [
+                "http_response"
+            ]
+        ]
+    },
+    {
+        "id": "http_response",
+        "type": "http response",
+        "z": "1",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 850,
+        "y": 80,
+        "wires": []
+    }
+]
