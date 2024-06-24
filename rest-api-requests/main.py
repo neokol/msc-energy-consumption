@@ -1,11 +1,9 @@
 from invoker.invoker import invoke_openwhisk_action, invoke_cost_copenwhisk_action
 
 import os
-from fastapi import FastAPI, HTTPException,UploadFile, File
+from fastapi import FastAPI, HTTPException, Request
 from typing import List
 
-import pandas as pd
-import numpy as np
 from schemas import EnergyReading, Device
 from datetime import datetime
 from minio import Minio
@@ -132,4 +130,27 @@ def get_anomaly_device(date: str):
         result = invoke_cost_copenwhisk_action(date)
         return result
     except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    
+@app.post('/webhook/minio')
+async def minio_webhook(request: Request):
+    """Endpoint to receive MinIO event notifications."""
+    try:
+        data = await request.json()
+        print(f"Received data: {data}")  # Log received data
+
+        if data.get('EventName') == 's3:ObjectCreated:Put':
+            connection = initialize_rabbitmq_connection()
+            try:
+                # Assuming data is already a dict, if not, convert appropriately
+                publish_to_rabbitmq(data, connection, 'energy_data')
+                return {"status": "success", "message": "Upload event sent to RabbitMQ"}
+            finally:
+                connection.close()  # Ensure the connection is closed after publishing
+        else:
+            return {"status": "ignored", "message": "Event not relevant"}
+
+    except Exception as e:
+        print(f"Error processing webhook: {e}")  # Log the error
         raise HTTPException(status_code=500, detail=str(e))
