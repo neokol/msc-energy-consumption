@@ -1,0 +1,103 @@
+[
+    {
+        "id": "1",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "http_in",
+        "type": "http in",
+        "z": "1",
+        "name": "",
+        "url": "http://localhost:8000/api/provide_energy",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 80,
+        "wires": [
+            [
+                "process_rabbitmq"
+            ]
+        ]
+    },
+    {
+        "id": "process_rabbitmq",
+        "type": "function",
+        "z": "1",
+        "name": "Process and Send to RabbitMQ",
+        "func": "const amqp = require('amqplib/callback_api');\n\nconst connection = await amqp.connect('amqp://guest:guest@RABBITMQ_HOST:5672');\nconst channel = await connection.createChannel();\nconst queue = 'energy_data';\n\nconst data = msg.payload;\nconst message = JSON.stringify(data);\n\nchannel.assertQueue(queue, { durable: true });\nchannel.sendToQueue(queue, Buffer.from(message));\n\nmsg.payload = { message: 'Data received and queued for processing.' };\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [
+            {
+                "var": "amqp",
+                "module": "amqplib/callback_api"
+            }
+        ],
+        "x": 350,
+        "y": 80,
+        "wires": [
+            [
+                "http_request_consume_save"
+            ]
+        ]
+    },
+    {
+        "id": "http_request_consume_save",
+        "type": "http request",
+        "z": "1",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "http://localhost:8000/api/consume_and_save",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 590,
+        "y": 80,
+        "wires": [
+            [
+                "http_request_device_consumption"
+            ]
+        ]
+    },
+    {
+        "id": "http_request_device_consumption",
+        "type": "http request",
+        "z": "1",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": false,
+        "url": "http://localhost:8000/api/device_consumption",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 850,
+        "y": 80,
+        "wires": [
+            [
+                "http_response"
+            ]
+        ]
+    },
+    {
+        "id": "http_response",
+        "type": "http response",
+        "z": "1",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1050,
+        "y": 80,
+        "wires": []
+    }
+]
