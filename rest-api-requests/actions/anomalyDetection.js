@@ -23,10 +23,11 @@ async function main(params) {
         console.log(`Checking for anomalies in consumption on ${date}`);
         let anomalies = [];
 
-        // List all device directories dynamically
-        const deviceStream = minioClient.listObjects(bucketName, '', true, '/');
+        // Dynamically list all device directories
+        const deviceStream = minioClient.listObjects(bucketName, '', false, {delimiter: '/'});
 
         for await (const device of deviceStream) {
+            if (!device.prefix) continue; // Skip if no prefix is found (no directory)
             const deviceName = device.prefix.split('/')[0]; // Get the device name by splitting the prefix
             const fileName = `${device.prefix}${date}.json`;
             console.log(`Processing file: ${fileName}`);
